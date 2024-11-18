@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "602197336868",
+    "project_id": "reignforestcafe",
+    "storage_bucket": "reignforestcafe.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:602197336868:android:b88f3db40c25f7d77989b1",
+        "android_client_info": {
+          "package_name": "com.example.nhss_reign_forest_cafe"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "602197336868-phejenjdvn2370u3sr263bnbitbhg9e8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCNKpJgEALgtZCPG2gH4k65EbJ42jaBAMk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "602197336868-phejenjdvn2370u3sr263bnbitbhg9e8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

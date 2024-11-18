@@ -1,0 +1,329 @@
+// ignore_for_file: prefer_const_constructors
+
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:nhss_reign_forest_cafe/data/models/Order.dart';
+import 'package:nhss_reign_forest_cafe/data/providers/order_provider.dart';
+import 'package:nhss_reign_forest_cafe/data/repositories/order_repository.dart';
+import 'package:nhss_reign_forest_cafe/presentation/order/order_search.dart';
+import 'package:nhss_reign_forest_cafe/presentation/redirects.dart';
+import 'package:nhss_reign_forest_cafe/presentation/redirects.dart';
+import 'package:nhss_reign_forest_cafe/presentation/store/store.dart';
+import 'specific_order_screen.dart';
+import 'order_card.dart';
+import 'package:nhss_reign_forest_cafe/data/models/Item.dart';
+import 'package:nhss_reign_forest_cafe/logic/item/item_bloc.dart';
+import 'package:nhss_reign_forest_cafe/logic/item/item_state.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter/services.dart';
+
+class OrderHomeScreen extends StatefulWidget {
+  const OrderHomeScreen({Key? key}) : super(key: key);
+
+  @override
+  State<OrderHomeScreen> createState() => _OrderHomeScreenState();
+}
+
+class _OrderHomeScreenState extends State<OrderHomeScreen> {
+  String selectedButton = "Pending";
+
+  Widget _buildNoOrdersWidget() {
+    return Center(
+      child: Column(
+        children: [
+          SizedBox(height: 120),
+          Image.asset(
+            'assets/noOrders.png',
+            width: 200,
+            height: 200,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<List<OrderModel>> _getOrders() async {
+    OrderProvider orderProvider = OrderProvider();
+    OrderRepository orderRepository = OrderRepository(orderProvider);
+
+    List<OrderModel> allOrders = await orderRepository.getOrders();
+
+    if (selectedButton.isNotEmpty) {
+      print(" THE SELECTIOD BUTTON IS: " + selectedButton);
+      List<OrderModel> filteredOrders =
+          allOrders.where((order) => order.status == selectedButton).toList();
+      return filteredOrders;
+    } else {
+      print("here");
+      return allOrders;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Color.fromARGB(255, 0, 0, 0),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(24, 68, 24, 0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              // Padding(
+              //   padding: const EdgeInsets.only(left: 20.0),
+              //   child: Row(
+              //     mainAxisAlignment: MainAxisAlignment.start,
+              //     children: [
+              //       Container(
+              //         height: 40,
+              //         width: 40,
+              //         decoration: const BoxDecoration(
+              //           borderRadius: BorderRadius.all(Radius.circular(30)),
+              //           color: Colors.grey,
+              //         ),
+              //         child: Center(
+              //           child: IconButton(
+              //             onPressed: () {
+              //               // Navigator.pushReplacement(
+              //               //   context,
+              //               //   MaterialPageRoute(
+              //               //       builder: (context) => StoreRedirect()),
+              //               // );
+              //               // Navigator.pop(
+              //               //   context,
+
+              //               // );
+              //               Navigator.push(
+              //                 context,
+              //                 MaterialPageRoute(
+              //                     builder: (context) => OrderLoginRedirect()),
+              //               );
+              //             },
+              //             icon: Icon(Icons.arrow_back),
+              //             color: Colors.white,
+              //           ),
+              //         ),
+              //       ),
+              //     ],
+              //   ),
+              // ),
+              SizedBox(
+                height: 20,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Text(
+                    "Orders",
+                    style: GoogleFonts.beVietnamPro(
+                      textStyle: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 25,
+                      ),
+                    ),
+                  ),
+                  Row(
+                    children: [
+                      Container(
+                        height: 40,
+                        width: 40,
+                        decoration: const BoxDecoration(
+                          borderRadius: BorderRadius.all(Radius.circular(30)),
+                          color: Colors.grey,
+                        ),
+                        child: Center(
+                          child: IconButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const OrderSearchRedirect()),
+                              );
+                            },
+                            icon: Icon(
+                              Icons.search,
+                              size: 20,
+                            ),
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        width: 15,
+                      ),
+                      Container(
+                        height: 40,
+                        width: 40,
+                        decoration: const BoxDecoration(
+                          borderRadius: BorderRadius.all(Radius.circular(30)),
+                          color: Colors.grey,
+                        ),
+                        child: Center(
+                          child: IconButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            icon: Icon(
+                              Icons.home,
+                              size: 20,
+                            ),
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              SizedBox(height: 20),
+              Row(
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        selectedButton = "Pending";
+                      });
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: selectedButton == "Pending"
+                          ? Color.fromARGB(255, 151, 71, 255)
+                          : Colors.grey[800],
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(100),
+                      ),
+                    ),
+                    child: Container(
+                      width: 60,
+                      height: 15,
+                      child: Text(
+                        "Pending",
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.beVietnamPro(
+                          textStyle: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 15),
+                  ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        selectedButton = "Delivered";
+                      });
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: selectedButton == "Delivered"
+                          ? Color.fromARGB(255, 151, 71, 255)
+                          : Colors.grey[800],
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(100),
+                      ),
+                    ),
+                    child: Container(
+                      width: 60,
+                      height: 15,
+                      child: Text(
+                        "Delivered",
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.beVietnamPro(
+                          textStyle: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 15),
+                  ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        selectedButton = "Canceled";
+                      });
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: selectedButton == "Canceled"
+                          ? Color.fromARGB(255, 151, 71, 255)
+                          : Colors.grey[800],
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(100),
+                      ),
+                    ),
+                    child: Container(
+                      width: 60,
+                      height: 15,
+                      child: Text(
+                        "Canceled",
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.beVietnamPro(
+                          textStyle: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 20),
+              FutureBuilder<List<OrderModel>>(
+                future: _getOrders(),
+                builder: (context, snapshot) {
+                  print(snapshot);
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return CircularProgressIndicator();
+                  } else if (snapshot.hasError) {
+                    return Text('Error: ${snapshot.error}');
+                  } else {
+                    List<OrderModel> orders = snapshot.data ?? [];
+                    if (orders.isEmpty) {
+                      return _buildNoOrdersWidget();
+                    } else {
+                      return Column(
+                        children: orders
+                            .map((order) => Column(
+                                  children: [
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => SpecificOrder(
+                                                orderId: order.orderID),
+                                          ),
+                                        );
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.grey[800],
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                        ),
+                                      ),
+                                      child: OrderCard(order: order),
+                                    ),
+                                    SizedBox(height: 15),
+                                  ],
+                                ))
+                            .toList(),
+                      );
+                    }
+                  }
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
